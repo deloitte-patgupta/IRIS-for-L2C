@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>L2C AI Orchestration — Data Flow & Technology Options</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --green-600:#006A39;   /* Deep green */
+    --green-500:#00823B;
+    --green-400:#86BC25;   /* Deloitte green */
+    --green-050:#F4F9ED;
+    --teal:#00A3A1;
+    --blue:#006BA6;
+    --navy:#0B2D4E;
+    --dark-green:#004C29;
+    --ink-900:#0E1414;
+    --ink-800:#1F2A2A;
+    --ink-700:#3A4444;
+    --ink-600:#5C6666;
+    --ink-400:#8A9494;
+    --ink-300:#BCC4C4;
+    --ink-200:#DDE3E1;
+    --ink-100:#EEF2F0;
+    --ink-050:#F7FAF8;
+    --paper:#FBFCFA;
+    --red:#C0392B;
+    --amber:#D98D00;
+
+    --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --font-serif:'Fraunces', Georgia, serif;
+
+    --rule:1px solid var(--ink-200);
+    --rule-dark:1px solid var(--ink-300);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--font-sans);
+    color:var(--ink-900);
+    background:var(--paper);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    font-size:15px;
+  }
+
+  .wrap{max-width:1360px;margin:0 auto;padding:56px 48px 96px}
+
+  /* ── Header ── */
+  header{
+    display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:end;
+    padding-bottom:28px;border-bottom:3px solid var(--ink-900);margin-bottom:48px;
+  }
+  .brand{display:flex;align-items:baseline;gap:6px}
+  .brand .name{font-weight:700;font-size:22px;letter-spacing:-.01em}
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--green-400);display:inline-block;transform:translateY(-2px)}
+  .kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-600);font-weight:600}
+  .doc-title{font-family:var(--font-serif);font-weight:700;font-size:40px;letter-spacing:-.02em;line-height:1.05;margin:8px 0 0}
+  .doc-sub{color:var(--ink-600);font-size:15px;margin-top:10px;max-width:640px}
+  .meta{text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--ink-600);letter-spacing:.08em;text-transform:uppercase}
+  .meta b{display:block;color:var(--ink-900);font-size:11px;font-weight:600;margin-bottom:3px}
+
+  /* ── Section ── */
+  section{margin-top:64px}
+  .section-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-400);font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+  .section-label::before{content:"";width:28px;height:1px;background:var(--green-400)}
+  .section-title{font-family:var(--font-serif);font-weight:700;font-size:30px;letter-spacing:-.015em;margin:0 0 8px;line-height:1.1}
+  .section-sub{color:var(--ink-600);font-size:15px;max-width:760px;margin:0 0 28px}
+
+  /* ── DATA FLOW DIAGRAM ── */
+  .flow{
+    border:var(--rule-dark);
+    border-radius:4px;
+    background:#fff;
+    padding:28px 28px 20px;
+    box-shadow:0 1px 0 rgba(14,20,20,.02);
+  }
+  .flow-header{
+    display:grid;grid-template-columns:1.8fr 3fr 1.2fr;gap:20px;
+    padding-bottom:14px;border-bottom:var(--rule);margin-bottom:18px;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-400);font-weight:500;
+  }
+  .flow-row{
+    position:relative;
+    display:grid;grid-template-columns:1.8fr 3fr 1.2fr;gap:20px;
+    padding:22px 0;border-bottom:var(--rule);
+  }
+  .flow-row:last-of-type{border-bottom:none}
+  .flow-row.dir-request{background:
+    linear-gradient(90deg,transparent 0%,rgba(0,106,57,.02) 40%,rgba(0,106,57,.04) 100%)}
+  .flow-row.dir-both{background:linear-gradient(90deg,rgba(0,163,161,.03),rgba(0,107,166,.03))}
+
+  .layer-head{display:flex;gap:14px;align-items:flex-start}
+  .layer-num{
+    font-family:var(--font-mono);font-weight:600;font-size:11px;
+    color:#fff;background:var(--ink-900);
+    padding:4px 8px;border-radius:2px;margin-top:3px;letter-spacing:.06em;flex:none;
+  }
+  .layer-num.l1{background:var(--blue)}
+  .layer-num.l2{background:var(--green-600)}
+  .layer-num.l3{background:var(--green-400);color:var(--ink-900)}
+  .layer-num.l4{background:var(--teal)}
+  .layer-num.l5{background:var(--dark-green)}
+  .layer-num.l6{background:var(--ink-700)}
+  .layer-name{font-weight:600;font-size:16px;letter-spacing:-.005em}
+  .layer-role{color:var(--ink-600);font-size:12.5px;margin-top:3px;line-height:1.4}
+
+  .flow-detail{display:flex;flex-direction:column;gap:10px;padding-top:4px}
+  .flow-pair{display:grid;grid-template-columns:70px 1fr;gap:14px;align-items:flex-start}
+  .flow-tag{
+    font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;
+    text-transform:uppercase;font-weight:600;
+    padding:4px 8px;border-radius:2px;text-align:center;
+    background:var(--ink-100);color:var(--ink-700);
+  }
+  .flow-tag.down{background:var(--green-050);color:var(--green-600)}
+  .flow-tag.up{background:#E6F1F7;color:var(--blue)}
+  .flow-tag.ev{background:#FFF4E0;color:var(--amber)}
+  .flow-text{font-size:13px;color:var(--ink-800);line-height:1.55}
+  .flow-text .chip{
+    font-family:var(--font-mono);font-size:11px;background:var(--ink-100);
+    padding:1px 6px;border-radius:2px;color:var(--ink-800);margin:0 1px;
+  }
+
+  .protocol{padding-top:4px;display:flex;flex-direction:column;gap:5px}
+  .proto-lbl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-400)}
+  .proto-val{font-size:12.5px;color:var(--ink-800);font-weight:500;line-height:1.45}
+  .proto-ex{font-size:11.5px;color:var(--ink-600);font-family:var(--font-mono);line-height:1.5}
+
+  /* Vertical spine + direction arrows */
+  .flow::before{
+    content:"";position:absolute;
+  }
+  .spine{position:relative}
+  .spine::before{
+    content:"";position:absolute;left:calc(1.8fr * 0);top:0;bottom:0;width:0;
+  }
+
+  /* legend */
+  .legend{
+    display:flex;flex-wrap:wrap;gap:24px;margin-top:18px;
+    padding:12px 16px;background:var(--ink-050);border-radius:3px;
+  }
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-700)}
+  .legend-chip{
+    font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;
+    text-transform:uppercase;font-weight:600;padding:3px 8px;border-radius:2px;
+  }
+
+  /* ── TECH OPTIONS MATRIX ── */
+  .matrix{border:var(--rule-dark);border-radius:4px;overflow:hidden;background:#fff}
+  .mrow{
+    display:grid;
+    grid-template-columns:1.15fr 1.6fr 1.3fr 1.3fr 1.3fr 1.45fr;
+    border-bottom:var(--rule);
+  }
+  .mrow:last-child{border-bottom:none}
+  .mrow.mhead{
+    background:var(--ink-900);color:#fff;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:600;
+  }
+  .mrow.mhead > div{padding:14px 16px;border-right:1px solid #2A3434}
+  .mrow.mhead > div:last-child{border-right:none}
+  .mhead .hyperscaler{display:flex;align-items:center;gap:8px}
+  .hyperscaler::before{content:"";width:8px;height:8px;border-radius:50%;display:inline-block}
+  .hyperscaler.aws::before{background:#FF9900}
+  .hyperscaler.azure::before{background:#0078D4}
+  .hyperscaler.gcp::before{background:#4285F4}
+
+  .mcell{padding:16px;border-right:var(--rule);font-size:13px;line-height:1.5;color:var(--ink-800)}
+  .mcell:last-child{border-right:none}
+  .mcell.mlayer{background:var(--ink-050);font-weight:600;font-size:14px;color:var(--ink-900);letter-spacing:-.005em;position:relative}
+  .mcell.mlayer .sub{font-weight:400;color:var(--ink-600);font-size:12px;margin-top:4px;letter-spacing:0}
+  .mcell.primary{background:var(--green-050);font-weight:500;color:var(--green-600)}
+  .mcell.primary::before{
+    content:"PRIMARY";display:inline-block;font-family:var(--font-mono);font-size:8.5px;
+    letter-spacing:.14em;background:var(--green-600);color:#fff;padding:2px 6px;border-radius:2px;
+    margin-right:8px;vertical-align:2px;font-weight:600;
+  }
+  .mcell.primary .choice{display:inline}
+  .mcell .note{display:block;color:var(--ink-600);font-size:11.5px;margin-top:4px;font-weight:400}
+  .mcell .pkg{font-family:var(--font-mono);font-size:12px;color:var(--ink-900)}
+  .mcell .meta{display:block;color:var(--ink-400);font-size:11px;font-family:var(--font-mono);margin-top:4px;letter-spacing:.04em}
+
+  /* sub-head accent */
+  .mrow-band{
+    grid-column:1 / -1;background:var(--ink-100);padding:10px 16px;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-600);font-weight:600;border-bottom:var(--rule);
+  }
+
+  /* ── Footer ── */
+  footer{
+    margin-top:72px;padding-top:20px;border-top:var(--rule);
+    display:flex;justify-content:space-between;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-400);
+  }
+
+  /* print */
+  @media print{
+    body{background:#fff}
+    .wrap{padding:24px;max-width:none}
+    section{break-inside:avoid;margin-top:32px}
+    .flow,.matrix{break-inside:avoid}
+    .flow-row{break-inside:avoid}
+  }
+  @media (max-width:980px){
+    .flow-header,.flow-row{grid-template-columns:1fr;gap:12px}
+    .mrow{grid-template-columns:1fr 1fr}
+    .mrow.mhead{display:none}
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand"><span class="name">Deloitte</span><span class="dot"></span></div>
+      <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-400);margin-top:6px">Consulting  ·  AI &amp; Data</div>
+    </div>
+    <div>
+      <div class="kicker">Reference Architecture  ·  Companion Diagram</div>
+      <h1 class="doc-title">Data flow across the L2C orchestration stack</h1>
+      <p class="doc-sub">How a natural-language request becomes action — and how data and telemetry flow back. Paired with a per-layer technology options matrix across AWS, Azure, GCP, and open source.</p>
+    </div>
+    <div class="meta">
+      <b>Version</b>
+      v1.0  ·  Apr 2026
+      <b style="margin-top:12px">Audience</b>
+      Architects · Delivery
+    </div>
+  </header>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 1 — DATA FLOW DIAGRAM                                  -->
+  <!-- ============================================================= -->
+  <section>
+    <div class="section-label">01 · Data flow</div>
+    <h2 class="section-title">One request, six layers, two directions</h2>
+    <p class="section-sub">A user's intent (downward arrows) traverses the stack to reach systems of record. Results, state, and telemetry (upward arrows) flow back to produce a summarized answer — with observability captured at every hop.</p>
+
+    <div class="flow">
+      <div class="flow-header">
+        <div>Layer</div>
+        <div>Data that moves  —  downward request · upward response · events</div>
+        <div>Primary protocol</div>
+      </div>
+
+      <!-- L1 Experience -->
+      <div class="flow-row dir-request">
+        <div class="layer-head">
+          <span class="layer-num l1">L1</span>
+          <div>
+            <div class="layer-name">Experience layer</div>
+            <div class="layer-role">User channels — portal, embedded widgets, chat, agent API</div>
+          </div>
+        </div>
+        <div class="flow-detail">
+          <div class="flow-pair">
+            <span class="flow-tag down">Down</span>
+            <div class="flow-text">User utterance + session context + <span class="chip">record_id</span> + signed <span class="chip">id_token</span> (user identity, scopes, tenant)</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag up">Up</span>
+            <div class="flow-text">Streamed tokens (SSE), final answer, citations to source records, suggested actions with confirm prompts</div>
+          </div>
+        </div>
+        <div class="protocol">
+          <div class="proto-lbl">Transport</div>
+          <div class="proto-val">HTTPS + SSE / WebSocket</div>
+          <div class="proto-ex">OIDC · OAuth 2.1 · W3C traceparent</div>
+        </div>
+      </div>
+
+      <!-- L2 Supervisor -->
+      <div class="flow-row dir-request">
+        <div class="layer-head">
+          <span class="layer-num l2">L2</span>
+          <div>
+            <div class="layer-name">Agent orchestration</div>
+            <div class="layer-role">Supervisor (LangGraph) — plan, route, guardrail, summarize</div>
+          </div>
+        </div>
+        <div class="flow-detail">
+          <div class="flow-pair">
+            <span class="flow-tag down">Down</span>
+            <div class="flow-text">Typed plan: decomposed tasks, selected domain agent(s), tool bindings, PII-redacted prompts, turn memory</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag up">Up</span>
+            <div class="flow-text">Aggregated agent results, confidence scores, redacted intermediate reasoning, handoff-ready summary</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag ev">Trace</span>
+            <div class="flow-text">OTel span per graph edge · token count · tool latency · policy decisions</div>
+          </div>
+        </div>
+        <div class="protocol">
+          <div class="proto-lbl">Internal</div>
+          <div class="proto-val">gRPC / async function calls</div>
+          <div class="proto-ex">Claude · Nova · GPT-4o · Gemini</div>
+        </div>
+      </div>
+
+      <!-- L3 Agent mesh -->
+      <div class="flow-row dir-both">
+        <div class="layer-head">
+          <span class="layer-num l3">L3</span>
+          <div>
+            <div class="layer-name">Agent mesh</div>
+            <div class="layer-role">Domain agents — Sales, Q2O, Billing &amp; Rev, ERP/Finance</div>
+          </div>
+        </div>
+        <div class="flow-detail">
+          <div class="flow-pair">
+            <span class="flow-tag down">Down</span>
+            <div class="flow-text">Scoped task envelope: <span class="chip">intent</span>, <span class="chip">canonical_ids</span>, <span class="chip">user_token</span>, policy constraints</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag up">Up</span>
+            <div class="flow-text">Typed artifact (quote, invoice, forecast) + action receipt + per-tool latency + any follow-up question for user</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag ev">A2A</span>
+            <div class="flow-text">Agents delegate to each other (e.g., Sales → Q2O) and to vendor agents (Agentforce, OCI GenAI) over A2A</div>
+          </div>
+        </div>
+        <div class="protocol">
+          <div class="proto-lbl">Agent ↔ Agent</div>
+          <div class="proto-val">A2A (Agent-to-Agent)</div>
+          <div class="proto-ex">Streaming tasks · signed identity</div>
+        </div>
+      </div>
+
+      <!-- L4 Integration & MCP -->
+      <div class="flow-row dir-both">
+        <div class="layer-head">
+          <span class="layer-num l4">L4</span>
+          <div>
+            <div class="layer-name">Integration &amp; MCP</div>
+            <div class="layer-role">MCP servers per SaaS · API gateway · event bus · iPaaS</div>
+          </div>
+        </div>
+        <div class="flow-detail">
+          <div class="flow-pair">
+            <span class="flow-tag down">Down</span>
+            <div class="flow-text">Typed MCP tool call — e.g., <span class="chip">salesforce.create_quote(account_id, line_items)</span> with exchanged downstream token</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag up">Up</span>
+            <div class="flow-text">Vendor API response mapped to canonical schema · structured error with retryable flag</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag ev">Event</span>
+            <div class="flow-text">Inbound CDC / webhooks (opportunity updated, invoice posted) published to the event bus for downstream fan-out</div>
+          </div>
+        </div>
+        <div class="protocol">
+          <div class="proto-lbl">Agent ↔ System</div>
+          <div class="proto-val">MCP (Model Context Protocol)</div>
+          <div class="proto-ex">REST / GraphQL / SOAP behind it</div>
+        </div>
+      </div>
+
+      <!-- L5 Data & semantics -->
+      <div class="flow-row dir-both">
+        <div class="layer-head">
+          <span class="layer-num l5">L5</span>
+          <div>
+            <div class="layer-name">Data &amp; semantics</div>
+            <div class="layer-role">Lakehouse (historical) · federation (live) · canonical model · vector</div>
+          </div>
+        </div>
+        <div class="flow-detail">
+          <div class="flow-pair">
+            <span class="flow-tag down">Down</span>
+            <div class="flow-text">Semantic query — agents ask in business terms (<span class="chip">Customer</span>, <span class="chip">Invoice</span>); router picks federation or lakehouse</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag up">Up</span>
+            <div class="flow-text">Typed result set with lineage tags, data freshness timestamp, RLS-enforced column subset, vector matches for RAG</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag ev">ELT</span>
+            <div class="flow-text">Batch ELT from SaaS → bronze → silver → gold; CDC from ERP into lakehouse via GoldenGate / Debezium</div>
+          </div>
+        </div>
+        <div class="protocol">
+          <div class="proto-lbl">Query</div>
+          <div class="proto-val">SQL · GraphQL over semantic layer</div>
+          <div class="proto-ex">dbt · Cube · OpenLineage</div>
+        </div>
+      </div>
+
+      <!-- L6 Platform services -->
+      <div class="flow-row">
+        <div class="layer-head">
+          <span class="layer-num l6">L6</span>
+          <div>
+            <div class="layer-name">Platform services</div>
+            <div class="layer-role">Identity · observability · policy · secrets — cross-cutting, always-on</div>
+          </div>
+        </div>
+        <div class="flow-detail">
+          <div class="flow-pair">
+            <span class="flow-tag down">In</span>
+            <div class="flow-text">Every hop calls policy (OPA) for authorization, secrets for credentials, identity for token exchange</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag up">Out</span>
+            <div class="flow-text">Spans, metrics, audit records, eval scores — all correlated by <span class="chip">trace_id</span> back to the original user turn</div>
+          </div>
+          <div class="flow-pair">
+            <span class="flow-tag ev">Audit</span>
+            <div class="flow-text">Immutable log (agent decision · tool call · approval · outcome) retained 7 years for compliance</div>
+          </div>
+        </div>
+        <div class="protocol">
+          <div class="proto-lbl">Standards</div>
+          <div class="proto-val">OAuth 2.0 Token Exchange · OTel</div>
+          <div class="proto-ex">RFC 8693 · W3C Trace Context</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-chip" style="background:var(--green-050);color:var(--green-600)">DOWN</span>Request path — user intent flowing to systems</div>
+      <div class="legend-item"><span class="legend-chip" style="background:#E6F1F7;color:var(--blue)">UP</span>Response path — results flowing back to user</div>
+      <div class="legend-item"><span class="legend-chip" style="background:#FFF4E0;color:var(--amber)">EVENT</span>Asynchronous — events, CDC, batch ELT, traces, audit</div>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 2 — TECHNOLOGY OPTIONS                                 -->
+  <!-- ============================================================= -->
+  <section>
+    <div class="section-label">02 · Technology options</div>
+    <h2 class="section-title">One architecture, four valid stacks</h2>
+    <p class="section-sub">Per-layer choices across AWS, Azure, GCP, and best-of-breed open source. The <b>primary</b> recommendation in each row reflects the reference stack (AWS + Bedrock + LangGraph + Databricks); alternates are credible like-for-like replacements.</p>
+
+    <div class="matrix">
+
+      <!-- Header -->
+      <div class="mrow mhead">
+        <div>Layer / Component</div>
+        <div>Primary (reference stack)</div>
+        <div class="hyperscaler aws">AWS alternative</div>
+        <div class="hyperscaler azure">Azure alternative</div>
+        <div class="hyperscaler gcp">GCP alternative</div>
+        <div>Open source / Best-of-breed</div>
+      </div>
+
+      <!-- ═══ L1 EXPERIENCE ═══ -->
+      <div class="mrow-band">L1  ·  Experience layer</div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Portal / web UI<div class="sub">User-facing standalone app</div></div>
+        <div class="mcell primary"><span class="choice">Next.js + React + shadcn/ui</span><span class="note">TS · Tailwind · server components</span></div>
+        <div class="mcell">Amplify Hosting + CloudFront</div>
+        <div class="mcell">Azure Static Web Apps + Front Door</div>
+        <div class="mcell">Firebase Hosting + Cloud CDN</div>
+        <div class="mcell">Remix, SvelteKit, Nuxt<span class="note">self-host on k8s</span></div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Embedded widget<div class="sub">Inside Salesforce / Zuora / NetSuite / Oracle</div></div>
+        <div class="mcell primary"><span class="choice">Lightning Out (SF) · iframe + signed JWT</span></div>
+        <div class="mcell">API Gateway + Cognito for embed auth</div>
+        <div class="mcell">Entra External ID for embed auth</div>
+        <div class="mcell">Identity Platform + Cloud Run embeds</div>
+        <div class="mcell">Salesforce Canvas · Zuora Embed · custom iframe SDK</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Chat / agent UI<div class="sub">Streaming conversation interface</div></div>
+        <div class="mcell primary"><span class="choice">Vercel AI SDK · custom React</span></div>
+        <div class="mcell">Amazon Q Business (UI only)</div>
+        <div class="mcell">Copilot Studio chat canvas</div>
+        <div class="mcell">Dialogflow CX Messenger</div>
+        <div class="mcell">Chainlit · Streamlit · LibreChat</div>
+      </div>
+
+      <!-- ═══ L2 ORCHESTRATION ═══ -->
+      <div class="mrow-band">L2  ·  Agent orchestration</div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Agent framework<div class="sub">Supervisor, graph, memory, tools</div></div>
+        <div class="mcell primary"><span class="choice">LangGraph + LangChain</span><span class="note">typed nodes, replayable state</span></div>
+        <div class="mcell">Bedrock Agents · Strands Agents</div>
+        <div class="mcell">Semantic Kernel · AutoGen</div>
+        <div class="mcell">Vertex AI Agent Builder · ADK</div>
+        <div class="mcell">CrewAI · Haystack · Pydantic-AI · Mastra</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Foundation models<div class="sub">Reasoning + tool-use</div></div>
+        <div class="mcell primary"><span class="choice">Amazon Bedrock — Claude · Nova</span></div>
+        <div class="mcell">SageMaker JumpStart (self-managed)</div>
+        <div class="mcell">Azure OpenAI · Azure AI Foundry</div>
+        <div class="mcell">Vertex AI — Gemini · Anthropic on Vertex</div>
+        <div class="mcell">Anthropic API · OpenAI API · Mistral · Llama via Groq / Fireworks</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Memory / vector<div class="sub">Short-term + long-term recall</div></div>
+        <div class="mcell primary"><span class="choice">OpenSearch Serverless + Pinecone</span></div>
+        <div class="mcell">Bedrock Knowledge Bases · Kendra</div>
+        <div class="mcell">Azure AI Search · Cosmos DB for MongoDB (vCore)</div>
+        <div class="mcell">Vertex AI Vector Search · AlloyDB AI</div>
+        <div class="mcell">pgvector · Weaviate · Qdrant · Chroma · Milvus</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Guardrails / safety<div class="sub">PII, injection, toxicity, topic scope</div></div>
+        <div class="mcell primary"><span class="choice">Bedrock Guardrails + Presidio</span></div>
+        <div class="mcell">Comprehend PII + Macie</div>
+        <div class="mcell">Azure AI Content Safety + Purview</div>
+        <div class="mcell">Model Armor · DLP API</div>
+        <div class="mcell">NVIDIA NeMo Guardrails · Lakera Guard · Protect AI</div>
+      </div>
+
+      <!-- ═══ L3 AGENT MESH ═══ -->
+      <div class="mrow-band">L3  ·  Agent mesh  ·  vendor &amp; domain agents</div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Vendor-native agents<div class="sub">Agents that ship with each SaaS</div></div>
+        <div class="mcell primary"><span class="choice">Agentforce (SF) · Zuora AI · NetSuite AI · OCI GenAI Agents</span></div>
+        <div class="mcell">Bedrock Agents wrapping SF APIs</div>
+        <div class="mcell">Copilot Studio connectors to ERP/CRM</div>
+        <div class="mcell">Vertex Agent Builder connectors</div>
+        <div class="mcell">Custom agent wrappers via CrewAI / LangGraph sub-graphs</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Agent protocol<div class="sub">Agent-to-agent delegation</div></div>
+        <div class="mcell primary"><span class="choice">A2A (Agent-to-Agent)</span><span class="note">Linux Foundation</span></div>
+        <div class="mcell">Bedrock multi-agent collaboration (proprietary)</div>
+        <div class="mcell">Copilot Agent-to-Agent preview</div>
+        <div class="mcell">Vertex Agent2Agent preview</div>
+        <div class="mcell">AGNTCY · custom gRPC / JSON-RPC contracts</div>
+      </div>
+
+      <!-- ═══ L4 INTEGRATION ═══ -->
+      <div class="mrow-band">L4  ·  Integration &amp; MCP</div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">MCP servers<div class="sub">One per SaaS / data source</div></div>
+        <div class="mcell primary"><span class="choice">FastAPI + MCP Python SDK</span><span class="note">hosted in ECS Fargate</span></div>
+        <div class="mcell">Lambda-based MCP servers · App Runner</div>
+        <div class="mcell">Container Apps · Functions</div>
+        <div class="mcell">Cloud Run · Cloud Functions</div>
+        <div class="mcell">TypeScript MCP SDK · Rust MCP · Cloudflare Workers MCP</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">API gateway<div class="sub">Fronting agent + MCP endpoints</div></div>
+        <div class="mcell primary"><span class="choice">Amazon API Gateway</span></div>
+        <div class="mcell">AWS AppMesh · VPC Lattice</div>
+        <div class="mcell">Azure API Management</div>
+        <div class="mcell">Apigee · Cloud Endpoints</div>
+        <div class="mcell">Kong · Envoy · Tyk · KrakenD</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Event bus<div class="sub">Async fan-out, CDC, webhooks</div></div>
+        <div class="mcell primary"><span class="choice">Amazon EventBridge + MSK</span></div>
+        <div class="mcell">SNS/SQS · Kinesis</div>
+        <div class="mcell">Event Grid · Service Bus · Event Hubs</div>
+        <div class="mcell">Pub/Sub · Eventarc</div>
+        <div class="mcell">Apache Kafka · NATS · Redpanda · Pulsar</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">iPaaS / workflow<div class="sub">Multi-system business flows</div></div>
+        <div class="mcell primary"><span class="choice">MuleSoft Anypoint</span></div>
+        <div class="mcell">Step Functions · AppFlow</div>
+        <div class="mcell">Logic Apps · Power Automate</div>
+        <div class="mcell">Workflows · Application Integration</div>
+        <div class="mcell">Workato · Boomi · n8n · Temporal · Airbyte</div>
+      </div>
+
+      <!-- ═══ L5 DATA ═══ -->
+      <div class="mrow-band">L5  ·  Data &amp; semantics</div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Lakehouse<div class="sub">Curated history, KPIs, joins</div></div>
+        <div class="mcell primary"><span class="choice">Databricks on AWS + Unity Catalog</span></div>
+        <div class="mcell">Redshift + Lake Formation · S3 Tables (Iceberg)</div>
+        <div class="mcell">Microsoft Fabric · Synapse + ADLS Gen2</div>
+        <div class="mcell">BigQuery + BigLake</div>
+        <div class="mcell">Snowflake · Dremio · StarRocks · Apache Iceberg + Trino</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Query federation<div class="sub">Live reads from source systems</div></div>
+        <div class="mcell primary"><span class="choice">Starburst Galaxy (managed Trino)</span></div>
+        <div class="mcell">Athena Federated Query · Redshift Spectrum</div>
+        <div class="mcell">Fabric Mirroring · Synapse link</div>
+        <div class="mcell">BigQuery Omni / External Connections</div>
+        <div class="mcell">Trino · Presto · Denodo · Dremio</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">ELT / pipelines<div class="sub">Ingestion, transformation</div></div>
+        <div class="mcell primary"><span class="choice">Fivetran + dbt Cloud</span></div>
+        <div class="mcell">AWS Glue · DMS · DataZone</div>
+        <div class="mcell">Azure Data Factory · ADF Mapping Flows</div>
+        <div class="mcell">Dataform · Dataflow · Datastream</div>
+        <div class="mcell">Airbyte · Meltano · Debezium · SQLMesh · dbt Core</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Semantic layer<div class="sub">Canonical model, metrics, RLS</div></div>
+        <div class="mcell primary"><span class="choice">Cube + dbt Semantic Layer</span></div>
+        <div class="mcell">Redshift Metric Views</div>
+        <div class="mcell">Fabric Semantic Models (Power BI)</div>
+        <div class="mcell">Looker Modeler (LookML)</div>
+        <div class="mcell">AtScale · MetricFlow · Malloy</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">MDM<div class="sub">Cross-system entity resolution</div></div>
+        <div class="mcell primary"><span class="choice">Informatica MDM SaaS</span></div>
+        <div class="mcell">Entity Resolution (AWS) · Neptune for graph</div>
+        <div class="mcell">Profisee on Azure · Purview MDM</div>
+        <div class="mcell">Master Data on BigQuery (custom)</div>
+        <div class="mcell">Reltio · Semarchy · Tamr · Zingg (open source)</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Data catalog / lineage<div class="sub">Governance &amp; discovery</div></div>
+        <div class="mcell primary"><span class="choice">Collibra + OpenLineage</span></div>
+        <div class="mcell">DataZone · Glue Data Catalog</div>
+        <div class="mcell">Microsoft Purview</div>
+        <div class="mcell">Dataplex Universal Catalog</div>
+        <div class="mcell">Unity Catalog · Atlan · Alation · DataHub · Amundsen</div>
+      </div>
+
+      <!-- ═══ L6 PLATFORM ═══ -->
+      <div class="mrow-band">L6  ·  Platform services  ·  identity, observability, policy</div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Identity / SSO<div class="sub">Including OAuth token exchange</div></div>
+        <div class="mcell primary"><span class="choice">Okta Workforce Identity</span></div>
+        <div class="mcell">Cognito · IAM Identity Center</div>
+        <div class="mcell">Microsoft Entra ID</div>
+        <div class="mcell">Identity Platform · Cloud IAM</div>
+        <div class="mcell">Auth0 · Keycloak · Ping Identity · ForgeRock</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Policy / authz<div class="sub">Per-call action authorization</div></div>
+        <div class="mcell primary"><span class="choice">Open Policy Agent (OPA)</span></div>
+        <div class="mcell">Verified Permissions (Cedar)</div>
+        <div class="mcell">Entra role assignments · ABAC</div>
+        <div class="mcell">IAM conditions · Policy Intelligence</div>
+        <div class="mcell">Cedar · Oso · Permit.io · SpiceDB (Zanzibar)</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Secrets / KMS<div class="sub">Credentials &amp; encryption keys</div></div>
+        <div class="mcell primary"><span class="choice">HashiCorp Vault + AWS KMS</span></div>
+        <div class="mcell">Secrets Manager · Parameter Store · KMS</div>
+        <div class="mcell">Key Vault · Managed HSM</div>
+        <div class="mcell">Secret Manager · Cloud KMS</div>
+        <div class="mcell">Infisical · Doppler · 1Password Secrets Automation</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Observability (app)<div class="sub">Logs, metrics, traces</div></div>
+        <div class="mcell primary"><span class="choice">Datadog + OpenTelemetry</span></div>
+        <div class="mcell">CloudWatch · X-Ray · Managed Prometheus</div>
+        <div class="mcell">Azure Monitor · App Insights</div>
+        <div class="mcell">Cloud Operations (Stackdriver)</div>
+        <div class="mcell">Grafana Cloud · New Relic · Dynatrace · Honeycomb · SigNoz</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Agent telemetry &amp; evals<div class="sub">LLM-specific tracing + quality</div></div>
+        <div class="mcell primary"><span class="choice">Langfuse (self-hosted)</span></div>
+        <div class="mcell">Bedrock Model Invocation Logs + CW</div>
+        <div class="mcell">Azure AI Foundry Evaluation</div>
+        <div class="mcell">Vertex AI Model Monitoring</div>
+        <div class="mcell">LangSmith · Arize Phoenix · Weights &amp; Biases · Braintrust · Helicone</div>
+      </div>
+
+      <div class="mrow">
+        <div class="mcell mlayer">Compute runtime<div class="sub">Where agents &amp; MCP servers run</div></div>
+        <div class="mcell primary"><span class="choice">ECS Fargate + EKS</span></div>
+        <div class="mcell">Lambda · App Runner · EC2 Auto Scaling</div>
+        <div class="mcell">AKS · Container Apps · Functions</div>
+        <div class="mcell">GKE · Cloud Run · Cloud Functions</div>
+        <div class="mcell">Kubernetes anywhere · Nomad · Fly.io · Railway · Modal</div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div>Deloitte Consulting  ·  AI &amp; Data  ·  L2C Reference Architecture</div>
+    <div>Companion to the architecture deck  ·  Internal use</div>
+  </footer>
+
+</div>
+</body>
+</html>
